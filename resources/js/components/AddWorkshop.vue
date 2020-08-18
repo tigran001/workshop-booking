@@ -11,7 +11,7 @@
                         <md-datepicker :class="getValidationClass('day')" name="day" id="day" autocomplete="given-name" v-model="form.day" :disabled="sending">
                             <label for="day">Day</label>
                             <span class="md-error" v-if="!$v.form.day.required">The Day is required</span>
-                            <span class="md-error" v-else-if="!$v.form.day.minlength">Invalid Day</span>
+                            <span class="md-error" v-else-if="!$v.form.day.minValue">Please select relevent date</span>
                         </md-datepicker>
                     </div>
                     <div class="md-layout-item md-small-size-100">
@@ -19,7 +19,6 @@
                             <label for="maxGuests">Max Guests</label>
                             <md-input type="number" id="maxGuests" name="maxGuests" autocomplete="maxGuests" v-model="form.maxGuests" :disabled="sending" />
                             <span class="md-error" v-if="!$v.form.maxGuests.required">The maxGuests is required</span>
-                            <span class="md-error" v-else-if="!$v.form.maxGuests.maxlength">Invalid maxGuests</span>
                         </md-field>
                     </div>
                 </div>
@@ -30,15 +29,15 @@
                             <label for="start-time">Start Time</label>
                             <md-input type="time" name="start-time" id="start-time" autocomplete="startTime" v-model="form.startTime" :disabled="sending" />
                             <span class="md-error" v-if="!$v.form.startTime.required">The start time is required</span>
-                            <span class="md-error" v-else-if="!$v.form.startTime.minlength">Invalid start Time</span>
+                            <span class="md-error" v-else-if="!$v.form.startTime.minValue">You can't choose time before current time</span>
                         </md-field>
                     </div>
                     <div class="md-layout-item md-small-size-100">
                         <md-field :class="getValidationClass('endTime')">
-                            <label for="end-time">end Time</label>
+                            <label for="end-time">End Time</label>
                             <md-input type="time" name="end-time" id="end-time" autocomplete="endTime" v-model="form.endTime" :disabled="sending" />
                             <span class="md-error" v-if="!$v.form.endTime.required">The end time is required</span>
-                            <span class="md-error" v-else-if="!$v.form.endTime.minlength">Invalid end Time</span>
+                            <span class="md-error" v-else-if="!$v.form.endTime.minValue">End time should follow start time</span>
                         </md-field>
                     </div>
                 </div>
@@ -92,7 +91,8 @@
   import { mapGetters } from 'vuex';
   import moment from 'moment';
   import {
-    required
+    required,
+    minValue
   } from 'vuelidate/lib/validators';
   export default {
     name: 'AddWorkshop',
@@ -110,26 +110,37 @@
       editWorkshop: false,
       workshopId: null
     }),
-    validations: {
-      form: {
-        day: {
-          required
-        },
-        startTime: {
-          required,
-        },
-        endTime: {
-          required
-        },
-        maxGuests: {
-          required,
-        },
-      }
+    validations() {
+        return{
+            form: {
+              day: {
+                required,
+                minValue: value => moment().diff(value, 'day') <= 0,
+              },
+              startTime: {
+                required,
+                minValue: value => moment().diff(this.form.day, 'day') === 0 ?
+                    moment().diff(`${this.form.day.toString().split('00:00:00')[0]} ${value}`, 'minutes') < 0
+                    : true,
+              },
+              endTime: {
+                required,
+                minValue: value => value > this.form.startTime,
+              },
+              maxGuests: {
+                required,
+              },
+            }
+        }
     },
     computed: {
         ...mapGetters([
         'rows',
         ])
+    },
+    mounted() {
+        let date = 'Tue Aug 18 2020 00:00:00 GMT+0400 (Armenia Standard Time)';
+        console.log(moment().diff(`${date.split('00:00:00')[0]} 11:55`, 'minutes'))
     },
     methods: {
         getValidationClass (fieldName) {
@@ -208,8 +219,8 @@
             this.$store.commit('deleteRow', id);
             }
         },
-        dayFormat(day) {
-            return moment(day).format('MMMM Do YYYY');
+        dayFormat(day, format = 'MMMM Do YYYY') {
+            return moment(day).format(format);
         },
     }
   }

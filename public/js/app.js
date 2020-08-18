@@ -2009,7 +2009,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 
@@ -2032,23 +2031,40 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       workshopId: null
     };
   },
-  validations: {
-    form: {
-      day: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"]
-      },
-      startTime: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"]
-      },
-      endTime: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"]
-      },
-      maxGuests: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"]
+  validations: function validations() {
+    var _this = this;
+
+    return {
+      form: {
+        day: {
+          required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"],
+          minValue: function minValue(value) {
+            return moment__WEBPACK_IMPORTED_MODULE_2___default()().diff(value, 'day') <= 0;
+          }
+        },
+        startTime: {
+          required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"],
+          minValue: function minValue(value) {
+            return moment__WEBPACK_IMPORTED_MODULE_2___default()().diff(_this.form.day, 'day') === 0 ? moment__WEBPACK_IMPORTED_MODULE_2___default()().diff("".concat(_this.form.day.toString().split('00:00:00')[0], " ").concat(value), 'minutes') < 0 : true;
+          }
+        },
+        endTime: {
+          required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"],
+          minValue: function minValue(value) {
+            return value > _this.form.startTime;
+          }
+        },
+        maxGuests: {
+          required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"]
+        }
       }
-    }
+    };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])(['rows'])),
+  mounted: function mounted() {
+    var date = 'Tue Aug 18 2020 00:00:00 GMT+0400 (Armenia Standard Time)';
+    console.log(moment__WEBPACK_IMPORTED_MODULE_2___default()().diff("".concat(date.split('00:00:00')[0], " 11:55"), 'minutes'));
+  },
   methods: {
     getValidationClass: function getValidationClass(fieldName) {
       var field = this.$v.form[fieldName];
@@ -2067,27 +2083,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.form.maxGuests = null;
     },
     saveWorkshop: function saveWorkshop() {
-      var _this = this;
-
-      this.sending = true; // Instead of this timeout, here you can call your API
-
-      window.setTimeout(function () {
-        _this.lastWorkshop = "".concat(_this.dayFormat(_this.form.day), " ").concat(_this.form.startTime, " - ").concat(_this.form.endTime);
-        _this.workshopSaved = true;
-        _this.sending = false;
-        var row = {
-          day: _this.form.day,
-          startTime: _this.form.startTime,
-          endTime: _this.form.endTime,
-          maxGuests: _this.form.maxGuests
-        };
-
-        _this.$store.commit('addRow', row);
-
-        _this.clearForm();
-      }, 1000);
-    },
-    editWorkshopData: function editWorkshopData(id) {
       var _this2 = this;
 
       this.sending = true; // Instead of this timeout, here you can call your API
@@ -2096,22 +2091,43 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this2.lastWorkshop = "".concat(_this2.dayFormat(_this2.form.day), " ").concat(_this2.form.startTime, " - ").concat(_this2.form.endTime);
         _this2.workshopSaved = true;
         _this2.sending = false;
+        var row = {
+          day: _this2.form.day,
+          startTime: _this2.form.startTime,
+          endTime: _this2.form.endTime,
+          maxGuests: _this2.form.maxGuests
+        };
+
+        _this2.$store.commit('addRow', row);
+
+        _this2.clearForm();
+      }, 1000);
+    },
+    editWorkshopData: function editWorkshopData(id) {
+      var _this3 = this;
+
+      this.sending = true; // Instead of this timeout, here you can call your API
+
+      window.setTimeout(function () {
+        _this3.lastWorkshop = "".concat(_this3.dayFormat(_this3.form.day), " ").concat(_this3.form.startTime, " - ").concat(_this3.form.endTime);
+        _this3.workshopSaved = true;
+        _this3.sending = false;
         var data = {
           row: {
-            day: _this2.form.day,
-            startTime: _this2.form.startTime,
-            endTime: _this2.form.endTime,
-            maxGuests: _this2.form.maxGuests
+            day: _this3.form.day,
+            startTime: _this3.form.startTime,
+            endTime: _this3.form.endTime,
+            maxGuests: _this3.form.maxGuests
           },
           id: id
         };
 
-        _this2.$store.commit('editRow', data, id);
+        _this3.$store.commit('editRow', data, id);
 
-        _this2.clearForm();
+        _this3.clearForm();
 
-        _this2.editWorkshop = false;
-        _this2.workshopId = null;
+        _this3.editWorkshop = false;
+        _this3.workshopId = null;
       }, 1000);
     },
     validateWorkshop: function validateWorkshop() {
@@ -2139,7 +2155,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     dayFormat: function dayFormat(day) {
-      return moment__WEBPACK_IMPORTED_MODULE_2___default()(day).format('MMMM Do YYYY');
+      var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'MMMM Do YYYY';
+      return moment__WEBPACK_IMPORTED_MODULE_2___default()(day).format(format);
     }
   }
 });
@@ -59797,9 +59814,9 @@ var render = function() {
                           ? _c("span", { staticClass: "md-error" }, [
                               _vm._v("The Day is required")
                             ])
-                          : !_vm.$v.form.day.minlength
+                          : !_vm.$v.form.day.minValue
                           ? _c("span", { staticClass: "md-error" }, [
-                              _vm._v("Invalid Day")
+                              _vm._v("Please select relevent date")
                             ])
                           : _vm._e()
                       ]
@@ -59840,10 +59857,6 @@ var render = function() {
                         !_vm.$v.form.maxGuests.required
                           ? _c("span", { staticClass: "md-error" }, [
                               _vm._v("The maxGuests is required")
-                            ])
-                          : !_vm.$v.form.maxGuests.maxlength
-                          ? _c("span", { staticClass: "md-error" }, [
-                              _vm._v("Invalid maxGuests")
                             ])
                           : _vm._e()
                       ],
@@ -59888,9 +59901,11 @@ var render = function() {
                           ? _c("span", { staticClass: "md-error" }, [
                               _vm._v("The start time is required")
                             ])
-                          : !_vm.$v.form.startTime.minlength
+                          : !_vm.$v.form.startTime.minValue
                           ? _c("span", { staticClass: "md-error" }, [
-                              _vm._v("Invalid start Time")
+                              _vm._v(
+                                "You can't choose time before current time"
+                              )
                             ])
                           : _vm._e()
                       ],
@@ -59909,7 +59924,7 @@ var render = function() {
                       { class: _vm.getValidationClass("endTime") },
                       [
                         _c("label", { attrs: { for: "end-time" } }, [
-                          _vm._v("end Time")
+                          _vm._v("End Time")
                         ]),
                         _vm._v(" "),
                         _c("md-input", {
@@ -59933,9 +59948,9 @@ var render = function() {
                           ? _c("span", { staticClass: "md-error" }, [
                               _vm._v("The end time is required")
                             ])
-                          : !_vm.$v.form.endTime.minlength
+                          : !_vm.$v.form.endTime.minValue
                           ? _c("span", { staticClass: "md-error" }, [
-                              _vm._v("Invalid end Time")
+                              _vm._v("End time should follow start time")
                             ])
                           : _vm._e()
                       ],
