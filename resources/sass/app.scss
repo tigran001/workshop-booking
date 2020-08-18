@@ -6,3 +6,9 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+.navbar-brand img.logo {
+    height: 55px;
+    margin-top: -5px;
+    margin-bottom: -5px;
+}
