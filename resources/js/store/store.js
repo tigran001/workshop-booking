@@ -4,23 +4,58 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
-  state: {
-    rows: [
-        {day: "2020-08-18", startTime: "17:01", endTime: "18:01", maxGuests: "22"}
-    ],
-  },
-  mutations: {
-    addRow(state, row) {
-      state.rows.push(row);
+    state: {
+        rows: [
+            
+        ],
     },
-    editRow(state, data) {
-        state.rows[data.id] = data.row;
+    mutations: {
+        addRow(state, row) {
+            axios.post('/add-workshop', row)
+                .then(res => {
+                    if(res.data.succsess) {
+                        state.rows.push(row);
+                    }
+                }).catch(err => {
+                    console.log(err)
+                }
+            );
+        },
+        editRow(state, data) {
+            let id = state.rows[data.id].id;
+            axios.post(`/edit-workshop/${id}`, data.row)
+                .then(res => {
+                    if(res.data.succsess) {
+                        data.row['id'] = id;
+                        state.rows[data.id] = data.row;
+                    }                    
+                }).catch(err => {
+                    console.log(err)
+                }
+            );
+        },
+        deleteRow(state, index) {
+            axios.delete(`/delete-workshop/${state.rows[index].id}`)
+                .then(res => {
+                    if(res.data.succsess) {
+                        state.rows.splice(index, 1);
+                    }                    
+                }).catch(err => {
+                    console.log(err)
+                }
+            );
+        },
+        getWorkshops(state) {
+            axios.post('/get-workshop')
+                .then(res => {
+                    state.rows = res.data.workshops;
+                }).catch(err => {
+                    console.log(err)
+                }
+            );
+        },
     },
-    deleteRow(state, id) {
-        state.rows.splice(id, 1);
+    getters: {
+        rows: state => state.rows
     }
-  },
-  getters: {
-    rows: state => state.rows
-  }
 })

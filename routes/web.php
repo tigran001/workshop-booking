@@ -20,6 +20,11 @@ Route::get('/', function () {
 // Auth::routes();
 
 Route::get('/add-workshop', 'WorkshopController@show')->name('add-workshop');
+Route::post('/add-workshop', 'WorkshopController@store');
+Route::post('/get-workshop', 'WorkshopController@get');
+Route::post('/edit-workshop/{id}', 'WorkshopController@update');
+Route::delete('/delete-workshop/{id}', 'WorkshopController@delete');
+
 Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('/login', 'Auth\LoginController@login');
 Route::post('/logout', 'Auth\LoginController@logout')->name('logout');

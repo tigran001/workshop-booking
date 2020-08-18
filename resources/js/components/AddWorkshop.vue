@@ -15,29 +15,29 @@
                         </md-datepicker>
                     </div>
                     <div class="md-layout-item md-small-size-100">
-                        <md-field :class="getValidationClass('maxGuests')">
-                            <label for="maxGuests">Max Guests</label>
-                            <md-input type="number" id="maxGuests" name="maxGuests" autocomplete="maxGuests" v-model="form.maxGuests" :disabled="sending" />
-                            <span class="md-error" v-if="!$v.form.maxGuests.required">The maxGuests is required</span>
+                        <md-field :class="getValidationClass('max_guests')">
+                            <label for="max_guests">Max Guests</label>
+                            <md-input type="number" id="max_guests" name="max_guests" autocomplete="max_guests" v-model="form.max_guests" :disabled="sending" />
+                            <span class="md-error" v-if="!$v.form.max_guests.required">The max_guests is required</span>
                         </md-field>
                     </div>
                 </div>
 
                 <div class="md-layout md-gutter">
                     <div class="md-layout-item md-small-size-100">
-                        <md-field :class="getValidationClass('startTime')">
+                        <md-field :class="getValidationClass('start_time')">
                             <label for="start-time">Start Time</label>
-                            <md-input type="time" name="start-time" id="start-time" autocomplete="startTime" v-model="form.startTime" :disabled="sending" />
-                            <span class="md-error" v-if="!$v.form.startTime.required">The start time is required</span>
-                            <span class="md-error" v-else-if="!$v.form.startTime.minValue">You can't choose time before current time</span>
+                            <md-input type="time" name="start-time" id="start-time" autocomplete="start_time" v-model="form.start_time" :disabled="sending" />
+                            <span class="md-error" v-if="!$v.form.start_time.required">The start time is required</span>
+                            <span class="md-error" v-else-if="!$v.form.start_time.minValue">You can't choose time before current time</span>
                         </md-field>
                     </div>
                     <div class="md-layout-item md-small-size-100">
-                        <md-field :class="getValidationClass('endTime')">
+                        <md-field :class="getValidationClass('end_time')">
                             <label for="end-time">End Time</label>
-                            <md-input type="time" name="end-time" id="end-time" autocomplete="endTime" v-model="form.endTime" :disabled="sending" />
-                            <span class="md-error" v-if="!$v.form.endTime.required">The end time is required</span>
-                            <span class="md-error" v-else-if="!$v.form.endTime.minValue">End time should follow start time</span>
+                            <md-input type="time" name="end-time" id="end-time" autocomplete="end_time" v-model="form.end_time" :disabled="sending" />
+                            <span class="md-error" v-if="!$v.form.end_time.required">The end time is required</span>
+                            <span class="md-error" v-else-if="!$v.form.end_time.minValue">End time should follow start time</span>
                         </md-field>
                     </div>
                 </div>
@@ -65,20 +65,22 @@
         </md-table-row>
         <md-table-row v-for="(row, index) in rows" :key="index">
           <md-table-cell>{{ dayFormat(row.day) }}</md-table-cell>
-          <md-table-cell>{{row.startTime}}</md-table-cell>
-          <md-table-cell>{{row.endTime}}</md-table-cell>
-          <md-table-cell>{{row.maxGuests}}</md-table-cell>
+          <md-table-cell>{{row.start_time}}</md-table-cell>
+          <md-table-cell>{{row.end_time}}</md-table-cell>
+          <md-table-cell>{{row.max_guests}}</md-table-cell>
           <md-table-cell>
-            <md-button class="md-icon-button md-accent" v-on:click="editRow(index)">
-                <svg class="edit-svg">
-                    <use xlink:href="/img/svg/icons.svg#edit"></use>
-                </svg>
-            </md-button>
-            <md-button class="md-icon-button md-accent" v-on:click="deleteRow(index)">
-                <svg class="delete-svg"  width="25px" height="25px">
-                    <use xlink:href="/img/svg/icons.svg#delete"></use>
-                </svg>
-            </md-button>
+              <div class="d-flex">
+                <md-button class="md-icon-button md-accent" v-on:click="editRow(index)">
+                    <svg class="edit-svg">
+                        <use xlink:href="/img/svg/icons.svg#edit"></use>
+                    </svg>
+                </md-button>
+                <md-button class="md-icon-button md-accent" v-on:click="deleteRow(index)">
+                    <svg class="delete-svg"  width="25px" height="25px">
+                        <use xlink:href="/img/svg/icons.svg#delete"></use>
+                    </svg>
+                </md-button>
+              </div>
           </md-table-cell>
         </md-table-row>
       </md-table>
@@ -100,9 +102,9 @@
     data: () => ({
       form: {
         day: null,
-        startTime: null,
-        endTime: null,
-        maxGuests: null,
+        start_time: null,
+        end_time: null,
+        max_guests: null,
       },
       workshopSaved: false,
       sending: false,
@@ -117,17 +119,17 @@
                 required,
                 minValue: value => moment().diff(value, 'day') <= 0,
               },
-              startTime: {
+              start_time: {
                 required,
                 minValue: value => moment().diff(this.form.day, 'day') === 0 ?
                     moment().diff(`${this.form.day.toString().split('00:00:00')[0]} ${value}`, 'minutes') < 0
                     : true,
               },
-              endTime: {
+              end_time: {
                 required,
-                minValue: value => value > this.form.startTime,
+                minValue: value => value > this.form.start_time,
               },
-              maxGuests: {
+              max_guests: {
                 required,
               },
             }
@@ -135,12 +137,11 @@
     },
     computed: {
         ...mapGetters([
-        'rows',
+            'rows',
         ])
     },
-    mounted() {
-        let date = 'Tue Aug 18 2020 00:00:00 GMT+0400 (Armenia Standard Time)';
-        console.log(moment().diff(`${date.split('00:00:00')[0]} 11:55`, 'minutes'))
+    beforeMount() {
+        this.$store.commit('getWorkshops');
     },
     methods: {
         getValidationClass (fieldName) {
@@ -153,41 +154,41 @@
         },
         clearForm () {
             this.$v.$reset();
-            this.form.day       = null;
-            this.form.startTime = null;
-            this.form.endTime   = null;
-            this.form.maxGuests = null;
+            this.form.day        = null;
+            this.form.start_time = null;
+            this.form.end_time    = null;
+            this.form.max_guests  = null;
         },
         saveWorkshop () {
             this.sending = true
             // Instead of this timeout, here you can call your API
             window.setTimeout(() => {
-            this.lastWorkshop  = `${this.dayFormat(this.form.day)} ${this.form.startTime} - ${this.form.endTime}`;
+            this.lastWorkshop  = `${this.dayFormat(this.form.day)} ${this.form.start_time} - ${this.form.end_time}`;
             this.workshopSaved = true;
-            this.sending   = false;
+            this.sending       = false;
             let row = {
                 day: this.form.day,
-                startTime: this.form.startTime,
-                endTime: this.form.endTime,
-                maxGuests: this.form.maxGuests
+                start_time: this.form.start_time,
+                end_time: this.form.end_time,
+                max_guests: this.form.max_guests
             };
             this.$store.commit('addRow', row);
             this.clearForm();
             }, 1000)
         },
         editWorkshopData (id) {
-            this.sending = true
+            // this.sending = true
             // Instead of this timeout, here you can call your API
             window.setTimeout(() => {
-            this.lastWorkshop  = `${this.dayFormat(this.form.day)} ${this.form.startTime} - ${this.form.endTime}`;
+            this.lastWorkshop  = `${this.dayFormat(this.form.day)} ${this.form.start_time} - ${this.form.end_time}`;
             this.workshopSaved = true;
             this.sending   = false;
             let data = {
                 row: {
                 day: this.form.day,
-                startTime: this.form.startTime,
-                endTime: this.form.endTime,
-                maxGuests: this.form.maxGuests
+                start_time: this.form.start_time,
+                end_time: this.form.end_time,
+                max_guests: this.form.max_guests
                 },
                 id: id
             }
@@ -200,11 +201,11 @@
         validateWorkshop (id = null) {
             this.$v.$touch();
             if (!this.$v.$invalid) {
-            if(this.editWorkshop){
-                this.editWorkshopData(id);
-            } else {
-                this.saveWorkshop();
-            }
+                if(this.editWorkshop){
+                    this.editWorkshopData(id);
+                } else {
+                    this.saveWorkshop();
+                }
             }
         },
         editRow (id) {
@@ -216,7 +217,7 @@
         },
         deleteRow (id) {
             if(confirm("Are you sure delete this workshop?")){
-            this.$store.commit('deleteRow', id);
+                this.$store.commit('deleteRow', id);
             }
         },
         dayFormat(day, format = 'MMMM Do YYYY') {

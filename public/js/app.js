@@ -2009,6 +2009,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -2020,9 +2022,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return {
       form: {
         day: null,
-        startTime: null,
-        endTime: null,
-        maxGuests: null
+        start_time: null,
+        end_time: null,
+        max_guests: null
       },
       workshopSaved: false,
       sending: false,
@@ -2042,28 +2044,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             return moment__WEBPACK_IMPORTED_MODULE_2___default()().diff(value, 'day') <= 0;
           }
         },
-        startTime: {
+        start_time: {
           required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"],
           minValue: function minValue(value) {
             return moment__WEBPACK_IMPORTED_MODULE_2___default()().diff(_this.form.day, 'day') === 0 ? moment__WEBPACK_IMPORTED_MODULE_2___default()().diff("".concat(_this.form.day.toString().split('00:00:00')[0], " ").concat(value), 'minutes') < 0 : true;
           }
         },
-        endTime: {
+        end_time: {
           required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"],
           minValue: function minValue(value) {
-            return value > _this.form.startTime;
+            return value > _this.form.start_time;
           }
         },
-        maxGuests: {
+        max_guests: {
           required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"]
         }
       }
     };
   },
   computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])(['rows'])),
-  mounted: function mounted() {
-    var date = 'Tue Aug 18 2020 00:00:00 GMT+0400 (Armenia Standard Time)';
-    console.log(moment__WEBPACK_IMPORTED_MODULE_2___default()().diff("".concat(date.split('00:00:00')[0], " 11:55"), 'minutes'));
+  beforeMount: function beforeMount() {
+    this.$store.commit('getWorkshops');
   },
   methods: {
     getValidationClass: function getValidationClass(fieldName) {
@@ -2078,9 +2079,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     clearForm: function clearForm() {
       this.$v.$reset();
       this.form.day = null;
-      this.form.startTime = null;
-      this.form.endTime = null;
-      this.form.maxGuests = null;
+      this.form.start_time = null;
+      this.form.end_time = null;
+      this.form.max_guests = null;
     },
     saveWorkshop: function saveWorkshop() {
       var _this2 = this;
@@ -2088,14 +2089,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.sending = true; // Instead of this timeout, here you can call your API
 
       window.setTimeout(function () {
-        _this2.lastWorkshop = "".concat(_this2.dayFormat(_this2.form.day), " ").concat(_this2.form.startTime, " - ").concat(_this2.form.endTime);
+        _this2.lastWorkshop = "".concat(_this2.dayFormat(_this2.form.day), " ").concat(_this2.form.start_time, " - ").concat(_this2.form.end_time);
         _this2.workshopSaved = true;
         _this2.sending = false;
         var row = {
           day: _this2.form.day,
-          startTime: _this2.form.startTime,
-          endTime: _this2.form.endTime,
-          maxGuests: _this2.form.maxGuests
+          start_time: _this2.form.start_time,
+          end_time: _this2.form.end_time,
+          max_guests: _this2.form.max_guests
         };
 
         _this2.$store.commit('addRow', row);
@@ -2106,18 +2107,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     editWorkshopData: function editWorkshopData(id) {
       var _this3 = this;
 
-      this.sending = true; // Instead of this timeout, here you can call your API
-
+      // this.sending = true
+      // Instead of this timeout, here you can call your API
       window.setTimeout(function () {
-        _this3.lastWorkshop = "".concat(_this3.dayFormat(_this3.form.day), " ").concat(_this3.form.startTime, " - ").concat(_this3.form.endTime);
+        _this3.lastWorkshop = "".concat(_this3.dayFormat(_this3.form.day), " ").concat(_this3.form.start_time, " - ").concat(_this3.form.end_time);
         _this3.workshopSaved = true;
         _this3.sending = false;
         var data = {
           row: {
             day: _this3.form.day,
-            startTime: _this3.form.startTime,
-            endTime: _this3.form.endTime,
-            maxGuests: _this3.form.maxGuests
+            start_time: _this3.form.start_time,
+            end_time: _this3.form.end_time,
+            max_guests: _this3.form.max_guests
           },
           id: id
         };
@@ -59831,32 +59832,32 @@ var render = function() {
                   [
                     _c(
                       "md-field",
-                      { class: _vm.getValidationClass("maxGuests") },
+                      { class: _vm.getValidationClass("max_guests") },
                       [
-                        _c("label", { attrs: { for: "maxGuests" } }, [
+                        _c("label", { attrs: { for: "max_guests" } }, [
                           _vm._v("Max Guests")
                         ]),
                         _vm._v(" "),
                         _c("md-input", {
                           attrs: {
                             type: "number",
-                            id: "maxGuests",
-                            name: "maxGuests",
-                            autocomplete: "maxGuests",
+                            id: "max_guests",
+                            name: "max_guests",
+                            autocomplete: "max_guests",
                             disabled: _vm.sending
                           },
                           model: {
-                            value: _vm.form.maxGuests,
+                            value: _vm.form.max_guests,
                             callback: function($$v) {
-                              _vm.$set(_vm.form, "maxGuests", $$v)
+                              _vm.$set(_vm.form, "max_guests", $$v)
                             },
-                            expression: "form.maxGuests"
+                            expression: "form.max_guests"
                           }
                         }),
                         _vm._v(" "),
-                        !_vm.$v.form.maxGuests.required
+                        !_vm.$v.form.max_guests.required
                           ? _c("span", { staticClass: "md-error" }, [
-                              _vm._v("The maxGuests is required")
+                              _vm._v("The max_guests is required")
                             ])
                           : _vm._e()
                       ],
@@ -59874,7 +59875,7 @@ var render = function() {
                   [
                     _c(
                       "md-field",
-                      { class: _vm.getValidationClass("startTime") },
+                      { class: _vm.getValidationClass("start_time") },
                       [
                         _c("label", { attrs: { for: "start-time" } }, [
                           _vm._v("Start Time")
@@ -59885,23 +59886,23 @@ var render = function() {
                             type: "time",
                             name: "start-time",
                             id: "start-time",
-                            autocomplete: "startTime",
+                            autocomplete: "start_time",
                             disabled: _vm.sending
                           },
                           model: {
-                            value: _vm.form.startTime,
+                            value: _vm.form.start_time,
                             callback: function($$v) {
-                              _vm.$set(_vm.form, "startTime", $$v)
+                              _vm.$set(_vm.form, "start_time", $$v)
                             },
-                            expression: "form.startTime"
+                            expression: "form.start_time"
                           }
                         }),
                         _vm._v(" "),
-                        !_vm.$v.form.startTime.required
+                        !_vm.$v.form.start_time.required
                           ? _c("span", { staticClass: "md-error" }, [
                               _vm._v("The start time is required")
                             ])
-                          : !_vm.$v.form.startTime.minValue
+                          : !_vm.$v.form.start_time.minValue
                           ? _c("span", { staticClass: "md-error" }, [
                               _vm._v(
                                 "You can't choose time before current time"
@@ -59921,7 +59922,7 @@ var render = function() {
                   [
                     _c(
                       "md-field",
-                      { class: _vm.getValidationClass("endTime") },
+                      { class: _vm.getValidationClass("end_time") },
                       [
                         _c("label", { attrs: { for: "end-time" } }, [
                           _vm._v("End Time")
@@ -59932,23 +59933,23 @@ var render = function() {
                             type: "time",
                             name: "end-time",
                             id: "end-time",
-                            autocomplete: "endTime",
+                            autocomplete: "end_time",
                             disabled: _vm.sending
                           },
                           model: {
-                            value: _vm.form.endTime,
+                            value: _vm.form.end_time,
                             callback: function($$v) {
-                              _vm.$set(_vm.form, "endTime", $$v)
+                              _vm.$set(_vm.form, "end_time", $$v)
                             },
-                            expression: "form.endTime"
+                            expression: "form.end_time"
                           }
                         }),
                         _vm._v(" "),
-                        !_vm.$v.form.endTime.required
+                        !_vm.$v.form.end_time.required
                           ? _c("span", { staticClass: "md-error" }, [
                               _vm._v("The end time is required")
                             ])
-                          : !_vm.$v.form.endTime.minValue
+                          : !_vm.$v.form.end_time.minValue
                           ? _c("span", { staticClass: "md-error" }, [
                               _vm._v("End time should follow start time")
                             ])
@@ -60040,64 +60041,69 @@ var render = function() {
                 [
                   _c("md-table-cell", [_vm._v(_vm._s(_vm.dayFormat(row.day)))]),
                   _vm._v(" "),
-                  _c("md-table-cell", [_vm._v(_vm._s(row.startTime))]),
+                  _c("md-table-cell", [_vm._v(_vm._s(row.start_time))]),
                   _vm._v(" "),
-                  _c("md-table-cell", [_vm._v(_vm._s(row.endTime))]),
+                  _c("md-table-cell", [_vm._v(_vm._s(row.end_time))]),
                   _vm._v(" "),
-                  _c("md-table-cell", [_vm._v(_vm._s(row.maxGuests))]),
+                  _c("md-table-cell", [_vm._v(_vm._s(row.max_guests))]),
                   _vm._v(" "),
-                  _c(
-                    "md-table-cell",
-                    [
-                      _c(
-                        "md-button",
-                        {
-                          staticClass: "md-icon-button md-accent",
-                          on: {
-                            click: function($event) {
-                              return _vm.editRow(index)
+                  _c("md-table-cell", [
+                    _c(
+                      "div",
+                      { staticClass: "d-flex" },
+                      [
+                        _c(
+                          "md-button",
+                          {
+                            staticClass: "md-icon-button md-accent",
+                            on: {
+                              click: function($event) {
+                                return _vm.editRow(index)
+                              }
                             }
-                          }
-                        },
-                        [
-                          _c("svg", { staticClass: "edit-svg" }, [
-                            _c("use", {
-                              attrs: { "xlink:href": "/img/svg/icons.svg#edit" }
-                            })
-                          ])
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "md-button",
-                        {
-                          staticClass: "md-icon-button md-accent",
-                          on: {
-                            click: function($event) {
-                              return _vm.deleteRow(index)
-                            }
-                          }
-                        },
-                        [
-                          _c(
-                            "svg",
-                            {
-                              staticClass: "delete-svg",
-                              attrs: { width: "25px", height: "25px" }
-                            },
-                            [
+                          },
+                          [
+                            _c("svg", { staticClass: "edit-svg" }, [
                               _c("use", {
                                 attrs: {
-                                  "xlink:href": "/img/svg/icons.svg#delete"
+                                  "xlink:href": "/img/svg/icons.svg#edit"
                                 }
                               })
-                            ]
-                          )
-                        ]
-                      )
-                    ],
-                    1
-                  )
+                            ])
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "md-button",
+                          {
+                            staticClass: "md-icon-button md-accent",
+                            on: {
+                              click: function($event) {
+                                return _vm.deleteRow(index)
+                              }
+                            }
+                          },
+                          [
+                            _c(
+                              "svg",
+                              {
+                                staticClass: "delete-svg",
+                                attrs: { width: "25px", height: "25px" }
+                              },
+                              [
+                                _c("use", {
+                                  attrs: {
+                                    "xlink:href": "/img/svg/icons.svg#delete"
+                                  }
+                                })
+                              ]
+                            )
+                          ]
+                        )
+                      ],
+                      1
+                    )
+                  ])
                 ],
                 1
               )
@@ -108964,22 +108970,44 @@ __webpack_require__.r(__webpack_exports__);
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__["default"]);
 var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
   state: {
-    rows: [{
-      day: "2020-08-18",
-      startTime: "17:01",
-      endTime: "18:01",
-      maxGuests: "22"
-    }]
+    rows: []
   },
   mutations: {
     addRow: function addRow(state, row) {
-      state.rows.push(row);
+      axios.post('/add-workshop', row).then(function (res) {
+        if (res.data.succsess) {
+          state.rows.push(row);
+        }
+      })["catch"](function (err) {
+        console.log(err);
+      });
     },
     editRow: function editRow(state, data) {
-      state.rows[data.id] = data.row;
+      var id = state.rows[data.id].id;
+      axios.post("/edit-workshop/".concat(id), data.row).then(function (res) {
+        if (res.data.succsess) {
+          data.row['id'] = id;
+          state.rows[data.id] = data.row;
+        }
+      })["catch"](function (err) {
+        console.log(err);
+      });
     },
-    deleteRow: function deleteRow(state, id) {
-      state.rows.splice(id, 1);
+    deleteRow: function deleteRow(state, index) {
+      axios["delete"]("/delete-workshop/".concat(state.rows[index].id)).then(function (res) {
+        if (res.data.succsess) {
+          state.rows.splice(index, 1);
+        }
+      })["catch"](function (err) {
+        console.log(err);
+      });
+    },
+    getWorkshops: function getWorkshops(state) {
+      axios.post('/get-workshop').then(function (res) {
+        state.rows = res.data.workshops;
+      })["catch"](function (err) {
+        console.log(err);
+      });
     }
   },
   getters: {
