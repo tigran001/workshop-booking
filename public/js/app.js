@@ -2216,6 +2216,8 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -2245,33 +2247,32 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "WorkshopBooking",
   data: function data() {
-    return {
-      workshops: [{
-        day: 'June 1st',
-        time: '9AM - 12PM',
-        guests: '5'
-      }, {
-        day: 'June 1st',
-        time: '12PM - 3PM',
-        guests: '5'
-      }, {
-        day: 'June 1st',
-        time: '3PM - 6PM',
-        guests: '7'
-      }, {
-        day: 'June 2nd',
-        time: '9AM - 12PM',
-        guests: '5'
-      }]
-    };
+    return {};
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])(['rows'])),
+  computed: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])(['rows'])), {}, {
+    workshops: {
+      // getter
+      get: function get() {
+        return this.rows;
+      },
+      // setter
+      set: function set(newValue) {}
+    }
+  }),
   beforeMount: function beforeMount() {
     this.$store.commit('getWorkshops');
+  },
+  methods: {
+    dayFormat: function dayFormat(day) {
+      var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'MMMM Do';
+      return moment__WEBPACK_IMPORTED_MODULE_1___default()(day).format(format);
+    }
   }
 });
 
@@ -60252,13 +60253,29 @@ var render = function() {
                       _c(
                         "md-table-cell",
                         { attrs: { "md-label": "Day", "md-sort-by": "day" } },
-                        [_vm._v(_vm._s(item.day))]
+                        [_vm._v(_vm._s(_vm.dayFormat(item.day)))]
                       ),
                       _vm._v(" "),
                       _c(
                         "md-table-cell",
-                        { attrs: { "md-label": "Time", "md-sort-by": "time" } },
-                        [_vm._v(_vm._s(item.time))]
+                        {
+                          attrs: {
+                            "md-label": "Start Time",
+                            "md-sort-by": "start_time"
+                          }
+                        },
+                        [_vm._v(_vm._s(item.start_time))]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "md-table-cell",
+                        {
+                          attrs: {
+                            "md-label": "End Time",
+                            "md-sort-by": "end_time"
+                          }
+                        },
+                        [_vm._v(_vm._s(item.end_time))]
                       ),
                       _vm._v(" "),
                       _c(

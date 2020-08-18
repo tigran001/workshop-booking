@@ -7,8 +7,9 @@
                 </md-table-toolbar>
 
                 <md-table-row slot="md-table-row" slot-scope="{ item }">
-                    <md-table-cell md-label="Day" md-sort-by="day">{{ item.day }}</md-table-cell>
-                    <md-table-cell md-label="Time" md-sort-by="time">{{ item.time }}</md-table-cell>
+                    <md-table-cell md-label="Day" md-sort-by="day">{{ dayFormat(item.day) }}</md-table-cell>
+                    <md-table-cell md-label="Start Time" md-sort-by="start_time">{{ item.start_time }}</md-table-cell>
+                    <md-table-cell md-label="End Time" md-sort-by="end_time">{{ item.end_time }}</md-table-cell>
                     <md-table-cell md-label="Max guests" md-sort-by="guests">{{ item.guests }}</md-table-cell>
                     <md-table-cell md-label="Book">
                         <svg class="book-svg" width="30px" height="30px">
@@ -23,41 +24,35 @@
 
 <script>
     import { mapGetters } from 'vuex';
+    import moment from 'moment';
     export default {
         name: "WorkshopBooking",
         data: () => ({
-            workshops: [
-                {
-                    day: 'June 1st',
-                    time: '9AM - 12PM',
-                    guests: '5',
-                },
-                {
-                    day: 'June 1st',
-                    time: '12PM - 3PM',
-                    guests: '5',
-                },
-                {
-                    day: 'June 1st',
-                    time: '3PM - 6PM',
-                    guests: '7',
-                },
-                {
-                    day: 'June 2nd',
-                    time: '9AM - 12PM',
-                    guests: '5',
-                },
-            ]
         }),
 
         computed: {
             ...mapGetters([
                 'rows',
-            ])
+            ]),
+            workshops: {
+                // getter
+                get: function () {
+                    return this.rows;
+                },
+                // setter
+                set: function (newValue) {}
+            }
         },
 
         beforeMount() {
             this.$store.commit('getWorkshops');
+        },
+
+        methods: {
+            
+            dayFormat(day, format = 'MMMM Do') {
+                return moment(day).format(format);
+            },
         },
     }
 </script>
