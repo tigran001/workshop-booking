@@ -2004,13 +2004,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -2024,7 +2017,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         day: null,
         start_time: null,
         end_time: null,
-        max_guests: null
+        guests: null
       },
       workshopSaved: false,
       sending: false,
@@ -2056,13 +2049,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             return value > _this.form.start_time;
           }
         },
-        max_guests: {
+        guests: {
           required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"]
         }
       }
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])(['rows'])),
+  computed: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])(['rows'])), {}, {
+    workshops: {
+      // getter
+      get: function get() {
+        return this.rows;
+      },
+      // setter
+      set: function set(newValue) {}
+    }
+  }),
   beforeMount: function beforeMount() {
     this.$store.commit('getWorkshops');
   },
@@ -2081,13 +2083,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.form.day = null;
       this.form.start_time = null;
       this.form.end_time = null;
-      this.form.max_guests = null;
+      this.form.guests = null;
     },
     saveWorkshop: function saveWorkshop() {
       var _this2 = this;
 
-      this.sending = true; // Instead of this timeout, here you can call your API
-
+      this.sending = true;
       window.setTimeout(function () {
         _this2.lastWorkshop = "".concat(_this2.dayFormat(_this2.form.day), " ").concat(_this2.form.start_time, " - ").concat(_this2.form.end_time);
         _this2.workshopSaved = true;
@@ -2096,7 +2097,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           day: _this2.form.day,
           start_time: _this2.form.start_time,
           end_time: _this2.form.end_time,
-          max_guests: _this2.form.max_guests
+          guests: _this2.form.guests
         };
 
         _this2.$store.commit('addRow', row);
@@ -2107,8 +2108,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     editWorkshopData: function editWorkshopData(id) {
       var _this3 = this;
 
-      // this.sending = true
-      // Instead of this timeout, here you can call your API
+      this.sending = true; // Instead of this timeout, here you can call your API
+
       window.setTimeout(function () {
         _this3.lastWorkshop = "".concat(_this3.dayFormat(_this3.form.day), " ").concat(_this3.form.start_time, " - ").concat(_this3.form.end_time);
         _this3.workshopSaved = true;
@@ -2118,7 +2119,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             day: _this3.form.day,
             start_time: _this3.form.start_time,
             end_time: _this3.form.end_time,
-            max_guests: _this3.form.max_guests
+            guests: _this3.form.guests
           },
           id: id
         };
@@ -2145,19 +2146,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     editRow: function editRow(id) {
       this.$v.$reset();
-      this.form = this.rows[id];
+      var index = this.findRowById(id);
+      this.form = this.workshops[index];
       this.editWorkshop = true;
-      this.workshopId = id;
+      this.workshopId = index;
       window.scrollTo(0, 0);
     },
     deleteRow: function deleteRow(id) {
+      var index = this.findRowById(id);
+
       if (confirm("Are you sure delete this workshop?")) {
-        this.$store.commit('deleteRow', id);
+        this.$store.commit('deleteRow', index);
       }
     },
     dayFormat: function dayFormat(day) {
-      var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'MMMM Do YYYY';
+      var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'MMMM Do';
       return moment__WEBPACK_IMPORTED_MODULE_2___default()(day).format(format);
+    },
+    findRowById: function findRowById(id) {
+      return this.workshops.map(function (item) {
+        return item.id;
+      }).indexOf(id);
     }
   }
 });
@@ -2206,6 +2215,13 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -2229,11 +2245,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "WorkshopBooking",
   data: function data() {
     return {
-      users: [{
+      workshops: [{
         day: 'June 1st',
         time: '9AM - 12PM',
         guests: '5'
@@ -2251,6 +2268,10 @@ __webpack_require__.r(__webpack_exports__);
         guests: '5'
       }]
     };
+  },
+  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])(['rows'])),
+  beforeMount: function beforeMount() {
+    this.$store.commit('getWorkshops');
   }
 });
 
@@ -59832,32 +59853,32 @@ var render = function() {
                   [
                     _c(
                       "md-field",
-                      { class: _vm.getValidationClass("max_guests") },
+                      { class: _vm.getValidationClass("guests") },
                       [
-                        _c("label", { attrs: { for: "max_guests" } }, [
+                        _c("label", { attrs: { for: "guests" } }, [
                           _vm._v("Max Guests")
                         ]),
                         _vm._v(" "),
                         _c("md-input", {
                           attrs: {
                             type: "number",
-                            id: "max_guests",
-                            name: "max_guests",
-                            autocomplete: "max_guests",
+                            id: "guests",
+                            name: "guests",
+                            autocomplete: "guests",
                             disabled: _vm.sending
                           },
                           model: {
-                            value: _vm.form.max_guests,
+                            value: _vm.form.guests,
                             callback: function($$v) {
-                              _vm.$set(_vm.form, "max_guests", $$v)
+                              _vm.$set(_vm.form, "guests", $$v)
                             },
-                            expression: "form.max_guests"
+                            expression: "form.guests"
                           }
                         }),
                         _vm._v(" "),
-                        !_vm.$v.form.max_guests.required
+                        !_vm.$v.form.guests.required
                           ? _c("span", { staticClass: "md-error" }, [
-                              _vm._v("The max_guests is required")
+                              _vm._v("The guests is required")
                             ])
                           : _vm._e()
                       ],
@@ -60014,103 +60035,128 @@ var render = function() {
       "div",
       { staticClass: "workshops" },
       [
-        _c(
-          "md-table",
-          { staticClass: "workshop" },
-          [
-            _c(
-              "md-table-row",
-              [
-                _c("md-table-head", [_vm._v("Day")]),
-                _vm._v(" "),
-                _c("md-table-head", [_vm._v("Start Time")]),
-                _vm._v(" "),
-                _c("md-table-head", [_vm._v("End Time")]),
-                _vm._v(" "),
-                _c("md-table-head", [_vm._v("Max Guests")]),
-                _vm._v(" "),
-                _c("md-table-head", [_vm._v("Actions")])
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _vm._l(_vm.rows, function(row, index) {
-              return _c(
-                "md-table-row",
-                { key: index },
-                [
-                  _c("md-table-cell", [_vm._v(_vm._s(_vm.dayFormat(row.day)))]),
-                  _vm._v(" "),
-                  _c("md-table-cell", [_vm._v(_vm._s(row.start_time))]),
-                  _vm._v(" "),
-                  _c("md-table-cell", [_vm._v(_vm._s(row.end_time))]),
-                  _vm._v(" "),
-                  _c("md-table-cell", [_vm._v(_vm._s(row.max_guests))]),
-                  _vm._v(" "),
-                  _c("md-table-cell", [
+        _c("md-table", {
+          staticClass: "workshop",
+          attrs: { "md-sort": "name", "md-sort-order": "asc", "md-card": "" },
+          scopedSlots: _vm._u([
+            {
+              key: "md-table-row",
+              fn: function(ref) {
+                var item = ref.item
+                return _c(
+                  "md-table-row",
+                  {},
+                  [
                     _c(
-                      "div",
-                      { staticClass: "d-flex" },
-                      [
-                        _c(
-                          "md-button",
-                          {
-                            staticClass: "md-icon-button md-accent",
-                            on: {
-                              click: function($event) {
-                                return _vm.editRow(index)
-                              }
-                            }
-                          },
-                          [
-                            _c("svg", { staticClass: "edit-svg" }, [
-                              _c("use", {
-                                attrs: {
-                                  "xlink:href": "/img/svg/icons.svg#edit"
+                      "md-table-cell",
+                      { attrs: { "md-label": "Day", "md-sort-by": "day" } },
+                      [_vm._v(_vm._s(_vm.dayFormat(item.day)))]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "md-table-cell",
+                      {
+                        attrs: {
+                          "md-label": "Start Time",
+                          "md-sort-by": "start_time"
+                        }
+                      },
+                      [_vm._v(_vm._s(item.start_time))]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "md-table-cell",
+                      {
+                        attrs: {
+                          "md-label": "End Time",
+                          "md-sort-by": "end_time"
+                        }
+                      },
+                      [_vm._v(_vm._s(item.end_time))]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "md-table-cell",
+                      {
+                        attrs: {
+                          "md-label": "Max guests",
+                          "md-sort-by": "guests"
+                        }
+                      },
+                      [_vm._v(_vm._s(item.guests))]
+                    ),
+                    _vm._v(" "),
+                    _c("md-table-cell", [
+                      _c(
+                        "div",
+                        { staticClass: "d-flex" },
+                        [
+                          _c(
+                            "md-button",
+                            {
+                              staticClass: "md-icon-button md-accent",
+                              on: {
+                                click: function($event) {
+                                  return _vm.editRow(item.id)
                                 }
-                              })
-                            ])
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "md-button",
-                          {
-                            staticClass: "md-icon-button md-accent",
-                            on: {
-                              click: function($event) {
-                                return _vm.deleteRow(index)
                               }
-                            }
-                          },
-                          [
-                            _c(
-                              "svg",
-                              {
-                                staticClass: "delete-svg",
-                                attrs: { width: "25px", height: "25px" }
-                              },
-                              [
+                            },
+                            [
+                              _c("svg", { staticClass: "edit-svg" }, [
                                 _c("use", {
                                   attrs: {
-                                    "xlink:href": "/img/svg/icons.svg#delete"
+                                    "xlink:href": "/img/svg/icons.svg#edit"
                                   }
                                 })
-                              ]
-                            )
-                          ]
-                        )
-                      ],
-                      1
-                    )
-                  ])
-                ],
-                1
-              )
-            })
-          ],
-          2
-        )
+                              ])
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "md-button",
+                            {
+                              staticClass: "md-icon-button md-accent",
+                              on: {
+                                click: function($event) {
+                                  return _vm.deleteRow(item.id)
+                                }
+                              }
+                            },
+                            [
+                              _c(
+                                "svg",
+                                {
+                                  staticClass: "delete-svg",
+                                  attrs: { width: "25px", height: "25px" }
+                                },
+                                [
+                                  _c("use", {
+                                    attrs: {
+                                      "xlink:href": "/img/svg/icons.svg#delete"
+                                    }
+                                  })
+                                ]
+                              )
+                            ]
+                          )
+                        ],
+                        1
+                      )
+                    ])
+                  ],
+                  1
+                )
+              }
+            }
+          ]),
+          model: {
+            value: _vm.workshops,
+            callback: function($$v) {
+              _vm.workshops = $$v
+            },
+            expression: "workshops"
+          }
+        })
       ],
       1
     )
@@ -60219,7 +60265,7 @@ var render = function() {
                         "md-table-cell",
                         {
                           attrs: {
-                            "md-label": "Maximum # of guests",
+                            "md-label": "Max guests",
                             "md-sort-by": "guests"
                           }
                         },
@@ -60249,11 +60295,11 @@ var render = function() {
               }
             ]),
             model: {
-              value: _vm.users,
+              value: _vm.workshops,
               callback: function($$v) {
-                _vm.users = $$v
+                _vm.workshops = $$v
               },
-              expression: "users"
+              expression: "workshops"
             }
           },
           [

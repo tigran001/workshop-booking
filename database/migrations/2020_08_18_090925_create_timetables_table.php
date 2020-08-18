@@ -18,7 +18,7 @@ class CreateTimetablesTable extends Migration
             $table->text('day');
             $table->text('start_time');
             $table->text('end_time');
-            $table->integer('max_guests');
+            $table->integer('guests');
             $table->timestamps();
         });
     }

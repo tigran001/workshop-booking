@@ -15,10 +15,10 @@
                         </md-datepicker>
                     </div>
                     <div class="md-layout-item md-small-size-100">
-                        <md-field :class="getValidationClass('max_guests')">
-                            <label for="max_guests">Max Guests</label>
-                            <md-input type="number" id="max_guests" name="max_guests" autocomplete="max_guests" v-model="form.max_guests" :disabled="sending" />
-                            <span class="md-error" v-if="!$v.form.max_guests.required">The max_guests is required</span>
+                        <md-field :class="getValidationClass('guests')">
+                            <label for="guests">Max Guests</label>
+                            <md-input type="number" id="guests" name="guests" autocomplete="guests" v-model="form.guests" :disabled="sending" />
+                            <span class="md-error" v-if="!$v.form.guests.required">The guests is required</span>
                         </md-field>
                     </div>
                 </div>
@@ -55,27 +55,20 @@
       <md-snackbar :md-active.sync="workshopSaved">The workshop {{ lastWorkshop }} was saved with success!</md-snackbar>
     </form>
     <div class="workshops">
-      <md-table class="workshop">
-        <md-table-row>
-          <md-table-head>Day</md-table-head>
-          <md-table-head>Start Time</md-table-head>
-          <md-table-head>End Time</md-table-head>
-          <md-table-head>Max Guests</md-table-head>
-          <md-table-head>Actions</md-table-head>
-        </md-table-row>
-        <md-table-row v-for="(row, index) in rows" :key="index">
-          <md-table-cell>{{ dayFormat(row.day) }}</md-table-cell>
-          <md-table-cell>{{row.start_time}}</md-table-cell>
-          <md-table-cell>{{row.end_time}}</md-table-cell>
-          <md-table-cell>{{row.max_guests}}</md-table-cell>
+      <md-table class="workshop" v-model="workshops" md-sort="name" md-sort-order="asc" md-card>
+        <md-table-row slot="md-table-row" slot-scope="{ item }">
+          <md-table-cell md-label="Day" md-sort-by="day">{{ dayFormat(item.day) }}</md-table-cell>
+          <md-table-cell md-label="Start Time" md-sort-by="start_time">{{ item.start_time }}</md-table-cell>
+          <md-table-cell md-label="End Time" md-sort-by="end_time">{{ item.end_time }}</md-table-cell>
+          <md-table-cell md-label="Max guests" md-sort-by="guests">{{ item.guests }}</md-table-cell>
           <md-table-cell>
               <div class="d-flex">
-                <md-button class="md-icon-button md-accent" v-on:click="editRow(index)">
+                <md-button class="md-icon-button md-accent" v-on:click="editRow(item.id)">
                     <svg class="edit-svg">
                         <use xlink:href="/img/svg/icons.svg#edit"></use>
                     </svg>
                 </md-button>
-                <md-button class="md-icon-button md-accent" v-on:click="deleteRow(index)">
+                <md-button class="md-icon-button md-accent" v-on:click="deleteRow(item.id)">
                     <svg class="delete-svg"  width="25px" height="25px">
                         <use xlink:href="/img/svg/icons.svg#delete"></use>
                     </svg>
@@ -104,7 +97,7 @@
         day: null,
         start_time: null,
         end_time: null,
-        max_guests: null,
+        guests: null,
       },
       workshopSaved: false,
       sending: false,
@@ -129,7 +122,7 @@
                 required,
                 minValue: value => value > this.form.start_time,
               },
-              max_guests: {
+              guests: {
                 required,
               },
             }
@@ -138,7 +131,15 @@
     computed: {
         ...mapGetters([
             'rows',
-        ])
+        ]),
+        workshops: {
+            // getter
+            get: function () {
+                return this.rows;
+            },
+            // setter
+            set: function (newValue) {}
+        }
     },
     beforeMount() {
         this.$store.commit('getWorkshops');
@@ -157,45 +158,44 @@
             this.form.day        = null;
             this.form.start_time = null;
             this.form.end_time    = null;
-            this.form.max_guests  = null;
+            this.form.guests  = null;
         },
         saveWorkshop () {
             this.sending = true
-            // Instead of this timeout, here you can call your API
             window.setTimeout(() => {
-            this.lastWorkshop  = `${this.dayFormat(this.form.day)} ${this.form.start_time} - ${this.form.end_time}`;
-            this.workshopSaved = true;
-            this.sending       = false;
-            let row = {
-                day: this.form.day,
-                start_time: this.form.start_time,
-                end_time: this.form.end_time,
-                max_guests: this.form.max_guests
-            };
-            this.$store.commit('addRow', row);
-            this.clearForm();
+                this.lastWorkshop  = `${this.dayFormat(this.form.day)} ${this.form.start_time} - ${this.form.end_time}`;
+                this.workshopSaved = true;
+                this.sending       = false;
+                let row = {
+                    day: this.form.day,
+                    start_time: this.form.start_time,
+                    end_time: this.form.end_time,
+                    guests: this.form.guests
+                };
+                this.$store.commit('addRow', row);
+                this.clearForm();
             }, 1000)
         },
         editWorkshopData (id) {
-            // this.sending = true
+            this.sending = true
             // Instead of this timeout, here you can call your API
             window.setTimeout(() => {
-            this.lastWorkshop  = `${this.dayFormat(this.form.day)} ${this.form.start_time} - ${this.form.end_time}`;
-            this.workshopSaved = true;
-            this.sending   = false;
-            let data = {
-                row: {
-                day: this.form.day,
-                start_time: this.form.start_time,
-                end_time: this.form.end_time,
-                max_guests: this.form.max_guests
-                },
-                id: id
-            }
-            this.$store.commit('editRow', data, id);
-            this.clearForm();
-            this.editWorkshop = false;
-            this.workshopId       = null;
+                this.lastWorkshop  = `${this.dayFormat(this.form.day)} ${this.form.start_time} - ${this.form.end_time}`;
+                this.workshopSaved = true;
+                this.sending   = false;
+                let data = {
+                    row: {
+                    day: this.form.day,
+                    start_time: this.form.start_time,
+                    end_time: this.form.end_time,
+                    guests: this.form.guests
+                    },
+                    id: id
+                }
+                this.$store.commit('editRow', data, id);
+                this.clearForm();
+                this.editWorkshop = false;
+                this.workshopId   = null;
             }, 1000)
         },
         validateWorkshop (id = null) {
@@ -210,18 +210,24 @@
         },
         editRow (id) {
             this.$v.$reset();
-            this.form = this.rows[id];
-            this.editWorkshop   = true;
-            this.workshopId         = id;
+            let index         = this.findRowById(id);
+            this.form         = this.workshops[index];
+            this.editWorkshop = true;
+            this.workshopId   = index;
             window.scrollTo(0, 0);
         },
         deleteRow (id) {
+            let index = this.findRowById(id);
             if(confirm("Are you sure delete this workshop?")){
-                this.$store.commit('deleteRow', id);
+                this.$store.commit('deleteRow', index);
             }
         },
-        dayFormat(day, format = 'MMMM Do YYYY') {
+        dayFormat(day, format = 'MMMM Do') {
             return moment(day).format(format);
+        },
+
+        findRowById(id) {
+            return this.workshops.map(item => item.id).indexOf(id);
         },
     }
   }

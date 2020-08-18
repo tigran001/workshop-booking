@@ -46,7 +46,7 @@ class WorkshopController extends Controller
             'day' => 'required',
             'start_time' => 'required',
             'end_time' => 'required',
-            'max_guests' => 'required'
+            'guests' => 'required'
         ]);
 
         $input = $request->all();
@@ -60,9 +60,9 @@ class WorkshopController extends Controller
         $timetable = new Timetable;
 
         $timetable->day = $request->day;
-        $timetable->start_time = $request->startTime;
-        $timetable->end_time = $request->endTime;
-        $timetable->max_guests = $request->maxGuests;
+        $timetable->start_time = $request->start_time;
+        $timetable->end_time = $request->end_time;
+        $timetable->guests = $request->guests;
 
         $status = $timetable->save();
         return response()->json(['succsess' => $status]);
