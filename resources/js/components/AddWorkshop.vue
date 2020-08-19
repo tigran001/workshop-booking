@@ -41,10 +41,7 @@
                         </md-field>
                     </div>
                 </div>
-
-                
             </md-card-content>
-
             <md-progress-bar md-mode="indeterminate" v-if="sending" />
 
             <md-card-actions>
@@ -146,20 +143,21 @@
     },
     methods: {
         getValidationClass (fieldName) {
-            const field = this.$v.form[fieldName]
+            const field = this.$v.form[fieldName];
+
             if (field) {
-            return {
-                'md-invalid': field.$invalid && field.$dirty
-            }
+                return {
+                    'md-invalid': field.$invalid && field.$dirty
+                }
             }
         },
-        clearForm () {
-            this.$v.$reset();
-            this.form.day        = null;
-            this.form.start_time = null;
-            this.form.end_time    = null;
-            this.form.guests  = null;
-        },
+            clearForm () {
+                this.$v.$reset();
+                this.form.day        = null;
+                this.form.start_time = null;
+                this.form.end_time   = null;
+                this.form.guests     = null;
+            },
         saveWorkshop () {
             this.sending = true
             window.setTimeout(() => {
@@ -185,10 +183,10 @@
                 this.sending   = false;
                 let data = {
                     row: {
-                    day: this.form.day,
-                    start_time: this.form.start_time,
-                    end_time: this.form.end_time,
-                    guests: this.form.guests
+                        day: this.form.day,
+                        start_time: this.form.start_time,
+                        end_time: this.form.end_time,
+                        guests: this.form.guests
                     },
                     id: id
                 }

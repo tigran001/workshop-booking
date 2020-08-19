@@ -2001,9 +2001,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
 
 
 
@@ -2215,9 +2212,15 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var vuelidate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuelidate */ "./node_modules/vuelidate/lib/index.js");
+/* harmony import */ var vuelidate__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vuelidate__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vuelidate/lib/validators */ "./node_modules/vuelidate/lib/validators/index.js");
+/* harmony import */ var vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__);
+var _methods;
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -2248,14 +2251,121 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "WorkshopBooking",
+  mixins: [vuelidate__WEBPACK_IMPORTED_MODULE_0__["validationMixin"]],
   data: function data() {
-    return {};
+    return {
+      form: {
+        name: null,
+        phone: null,
+        guest_name: null,
+        guest_email: null
+      },
+      guests: [],
+      addingGuest: false,
+      sending: false,
+      showDialog: false,
+      workshopId: null
+    };
   },
-  computed: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])(['rows'])), {}, {
+  validations: function validations() {
+    return {
+      form: {
+        name: {
+          required: this.addingGuest ? false : vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"]
+        },
+        phone: {
+          required: this.addingGuest ? false : vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"]
+        },
+        guest_name: {
+          required: this.addingGuest ? vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"] : false
+        },
+        guest_email: {
+          required: this.addingGuest ? vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["required"] : false,
+          email: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_3__["email"]
+        }
+      }
+    };
+  },
+  computed: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])(['rows'])), {}, {
     workshops: {
       // getter
       get: function get() {
@@ -2268,12 +2378,67 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   beforeMount: function beforeMount() {
     this.$store.commit('getWorkshops');
   },
-  methods: {
+  methods: (_methods = {
+    getValidationClass: function getValidationClass(fieldName) {
+      var field = this.$v.form[fieldName];
+
+      if (field) {
+        return {
+          'md-invalid': field.$invalid && field.$dirty
+        };
+      }
+    },
+    clearForm: function clearForm() {
+      this.$v.$reset();
+      this.form.name = null;
+    },
+    validateWorkshop: function validateWorkshop() {
+      this.$v.$touch();
+
+      if (!this.$v.$invalid) {
+        if (this.addingGuest) {
+          this.addGuest();
+        } else {
+          this.book();
+        }
+      }
+    },
     dayFormat: function dayFormat(day) {
       var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'MMMM Do';
-      return moment__WEBPACK_IMPORTED_MODULE_1___default()(day).format(format);
+      return moment__WEBPACK_IMPORTED_MODULE_2___default()(day).format(format);
+    },
+    openBook: function openBook(id) {
+      this.showDialog = true;
+      this.workshopId = id;
+    },
+    closeDialog: function closeDialog(clear) {
+      this.showDialog = false;
+      this.workshopId = null;
+
+      if (clear) {
+        this.clearForm();
+      }
+    },
+    book: function book() {
+      this.closeDialog(true);
+    },
+    addGuest: function addGuest() {
+      this.guests.push({
+        name: this.form.guest_name,
+        email: this.form.guest_email
+      });
+      this.$v.$reset();
+      this.form.guest_name = null;
+      this.form.guest_email = null;
+      this.addingGuest = false;
     }
-  }
+  }, _defineProperty(_methods, "clearForm", function clearForm() {
+    this.$v.$reset();
+    this.form.name = null;
+    this.form.phone = null;
+    this.form.guest_name = null;
+    this.form.guests_email = null;
+  }), _defineProperty(_methods, "deleteRow", function deleteRow() {}), _methods)
 });
 
 /***/ }),
@@ -6729,7 +6894,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "#workshop-booking {\n  padding-top: 50px;\n}\n#workshop-booking .book-svg {\n  margin-bottom: -10px;\n  cursor: pointer;\n}", ""]);
+exports.push([module.i, "#workshop-booking {\n  padding-top: 50px;\n}\n#workshop-booking .book-svg {\n  margin-bottom: -10px;\n  cursor: pointer;\n}\n.md-dialog-container {\n  width: 50%;\n  overflow-y: scroll;\n}\n@media only screen and (max-width: 750px) {\n.md-dialog-container {\n    width: 100%;\n}\n}\n.md-dialog-container .md-card {\n  box-shadow: 0 0;\n}\n.md-dialog-container::-webkit-scrollbar-track {\n  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);\n  border-radius: 10px;\n  background-color: #F5F5F5;\n}\n.md-dialog-container::-webkit-scrollbar {\n  width: 6px;\n  background-color: #F5F5F5;\n}\n.md-dialog-container::-webkit-scrollbar-thumb {\n  border-radius: 10px;\n  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);\n  background-color: #cccccc;\n}\n.md-list {\n  width: 320px;\n  max-width: 100%;\n  display: inline-block;\n  vertical-align: top;\n  border: 1px solid rgba(0, 0, 0, 0.12);\n}", ""]);
 
 // exports
 
@@ -60294,7 +60459,12 @@ var render = function() {
                           "svg",
                           {
                             staticClass: "book-svg",
-                            attrs: { width: "30px", height: "30px" }
+                            attrs: { width: "30px", height: "30px" },
+                            on: {
+                              click: function($event) {
+                                return _vm.openBook(item.id)
+                              }
+                            }
                           },
                           [
                             _c("use", {
@@ -60327,6 +60497,436 @@ var render = function() {
             ])
           ],
           1
+        ),
+        _vm._v(" "),
+        _c(
+          "md-dialog",
+          {
+            attrs: { "md-active": _vm.showDialog },
+            on: {
+              "update:mdActive": function($event) {
+                _vm.showDialog = $event
+              },
+              "update:md-active": function($event) {
+                _vm.showDialog = $event
+              }
+            }
+          },
+          [
+            _c("div", { staticClass: "card" }, [
+              _c(
+                "div",
+                { staticClass: "card-header" },
+                [_c("md-dialog-title", [_vm._v("Workshop booking")])],
+                1
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "card-body" }, [
+                _c(
+                  "form",
+                  {
+                    staticClass: "md-layout",
+                    attrs: { novalidate: "" },
+                    on: {
+                      submit: function($event) {
+                        $event.preventDefault()
+                        return _vm.validateWorkshop()
+                      }
+                    }
+                  },
+                  [
+                    _c(
+                      "md-card",
+                      { staticClass: "md-layout-item" },
+                      [
+                        _c(
+                          "md-card-content",
+                          [
+                            _c("div", { staticClass: "md-layout md-gutter" }, [
+                              _c(
+                                "div",
+                                {
+                                  staticClass:
+                                    "md-layout-item md-small-size-100"
+                                },
+                                [
+                                  _c(
+                                    "md-field",
+                                    { class: _vm.getValidationClass("name") },
+                                    [
+                                      _c("label", { attrs: { for: "name" } }, [
+                                        _vm._v("Customer Name")
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("md-input", {
+                                        attrs: {
+                                          type: "text",
+                                          id: "name",
+                                          name: "name",
+                                          autocomplete: "name",
+                                          disabled: _vm.sending
+                                        },
+                                        model: {
+                                          value: _vm.form.name,
+                                          callback: function($$v) {
+                                            _vm.$set(_vm.form, "name", $$v)
+                                          },
+                                          expression: "form.name"
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      !_vm.$v.form.name.required
+                                        ? _c(
+                                            "span",
+                                            { staticClass: "md-error" },
+                                            [_vm._v("The name is required")]
+                                          )
+                                        : _vm._e()
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                {
+                                  staticClass:
+                                    "md-layout-item md-small-size-100"
+                                },
+                                [
+                                  _c(
+                                    "md-field",
+                                    { class: _vm.getValidationClass("phone") },
+                                    [
+                                      _c("label", { attrs: { for: "phone" } }, [
+                                        _vm._v("Phone")
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("md-input", {
+                                        attrs: {
+                                          type: "number",
+                                          id: "phone",
+                                          name: "phone",
+                                          autocomplete: "phone",
+                                          disabled: _vm.sending
+                                        },
+                                        model: {
+                                          value: _vm.form.phone,
+                                          callback: function($$v) {
+                                            _vm.$set(_vm.form, "phone", $$v)
+                                          },
+                                          expression: "form.phone"
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      !_vm.$v.form.phone.required
+                                        ? _c(
+                                            "span",
+                                            { staticClass: "md-error" },
+                                            [_vm._v("The phone is required")]
+                                          )
+                                        : _vm._e()
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c("md-divider", { staticClass: "my-4" }),
+                            _vm._v(" "),
+                            _c("md-table", {
+                              attrs: { "md-sort-order": "asc", "md-card": "" },
+                              scopedSlots: _vm._u([
+                                {
+                                  key: "md-table-row",
+                                  fn: function(ref) {
+                                    var item = ref.item
+                                    return _c(
+                                      "md-table-row",
+                                      {},
+                                      [
+                                        _c(
+                                          "md-table-cell",
+                                          {
+                                            attrs: {
+                                              "md-label": "Name",
+                                              "md-sort-by": "name"
+                                            }
+                                          },
+                                          [_vm._v(_vm._s(item.name))]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "md-table-cell",
+                                          {
+                                            attrs: {
+                                              "md-label": "Email",
+                                              "md-sort-by": "email"
+                                            }
+                                          },
+                                          [_vm._v(_vm._s(item.email))]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "md-table-cell",
+                                          { attrs: { "md-label": "Delete" } },
+                                          [
+                                            _c(
+                                              "md-button",
+                                              {
+                                                staticClass:
+                                                  "md-icon-button md-accent",
+                                                on: {
+                                                  click: function($event) {
+                                                    return _vm.deleteRow(item)
+                                                  }
+                                                }
+                                              },
+                                              [
+                                                _c(
+                                                  "svg",
+                                                  {
+                                                    staticClass: "delete-svg",
+                                                    attrs: {
+                                                      width: "25px",
+                                                      height: "25px"
+                                                    }
+                                                  },
+                                                  [
+                                                    _c("use", {
+                                                      attrs: {
+                                                        "xlink:href":
+                                                          "/img/svg/icons.svg#delete"
+                                                      }
+                                                    })
+                                                  ]
+                                                )
+                                              ]
+                                            )
+                                          ],
+                                          1
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  }
+                                }
+                              ]),
+                              model: {
+                                value: _vm.guests,
+                                callback: function($$v) {
+                                  _vm.guests = $$v
+                                },
+                                expression: "guests"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "md-layout md-gutter" }, [
+                              _c(
+                                "div",
+                                {
+                                  staticClass:
+                                    "md-layout-item md-small-size-100"
+                                },
+                                [
+                                  _c(
+                                    "md-field",
+                                    {
+                                      class: _vm.getValidationClass(
+                                        "guest_name"
+                                      )
+                                    },
+                                    [
+                                      _c(
+                                        "label",
+                                        { attrs: { for: "guest_name" } },
+                                        [_vm._v("Guest Name")]
+                                      ),
+                                      _vm._v(" "),
+                                      _c("md-input", {
+                                        attrs: {
+                                          type: "text",
+                                          id: "guest_name",
+                                          name: "guest_name",
+                                          autocomplete: "guest_name",
+                                          disabled: _vm.sending
+                                        },
+                                        model: {
+                                          value: _vm.form.guest_name,
+                                          callback: function($$v) {
+                                            _vm.$set(
+                                              _vm.form,
+                                              "guest_name",
+                                              $$v
+                                            )
+                                          },
+                                          expression: "form.guest_name"
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      !_vm.$v.form.guest_name.required
+                                        ? _c(
+                                            "span",
+                                            { staticClass: "md-error" },
+                                            [
+                                              _vm._v(
+                                                "The guest_name is required"
+                                              )
+                                            ]
+                                          )
+                                        : _vm._e()
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                {
+                                  staticClass:
+                                    "md-layout-item md-small-size-100"
+                                },
+                                [
+                                  _c(
+                                    "md-field",
+                                    {
+                                      class: _vm.getValidationClass(
+                                        "guest_email"
+                                      )
+                                    },
+                                    [
+                                      _c(
+                                        "label",
+                                        { attrs: { for: "guest_email" } },
+                                        [_vm._v("Guest Email")]
+                                      ),
+                                      _vm._v(" "),
+                                      _c("md-input", {
+                                        attrs: {
+                                          type: "email",
+                                          id: "guest_email",
+                                          name: "guest_email",
+                                          autocomplete: "guest_email",
+                                          disabled: _vm.sending
+                                        },
+                                        model: {
+                                          value: _vm.form.guest_email,
+                                          callback: function($$v) {
+                                            _vm.$set(
+                                              _vm.form,
+                                              "guest_email",
+                                              $$v
+                                            )
+                                          },
+                                          expression: "form.guest_email"
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      !_vm.$v.form.guest_email.required
+                                        ? _c(
+                                            "span",
+                                            { staticClass: "md-error" },
+                                            [
+                                              _vm._v(
+                                                "The guest email is required"
+                                              )
+                                            ]
+                                          )
+                                        : !_vm.$v.form.guest_email.email
+                                        ? _c(
+                                            "span",
+                                            { staticClass: "md-error" },
+                                            [_vm._v("Should format email")]
+                                          )
+                                        : _vm._e()
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c(
+                              "md-card-actions",
+                              [
+                                _c(
+                                  "md-button",
+                                  {
+                                    staticClass: "md-primary",
+                                    attrs: {
+                                      type: "submit",
+                                      disabled: _vm.sending
+                                    },
+                                    on: {
+                                      click: function($event) {
+                                        _vm.addingGuest = true
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("Add Guest")]
+                                )
+                              ],
+                              1
+                            )
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c("md-divider"),
+                        _vm._v(" "),
+                        _vm.sending
+                          ? _c("md-progress-bar", {
+                              attrs: { "md-mode": "indeterminate" }
+                            })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c(
+                          "md-card-actions",
+                          [
+                            _c(
+                              "md-button",
+                              {
+                                staticClass: "md-primary",
+                                on: { click: _vm.closeDialog }
+                              },
+                              [_vm._v("Close")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "md-button",
+                              {
+                                staticClass: "md-primary",
+                                attrs: {
+                                  type: "submit",
+                                  disabled: _vm.sending
+                                },
+                                on: {
+                                  click: function($event) {
+                                    _vm.addingGuest = false
+                                  }
+                                }
+                              },
+                              [_vm._v("Book")]
+                            )
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                )
+              ])
+            ])
+          ]
         )
       ],
       1
@@ -109066,6 +109666,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       });
     },
     getWorkshops: function getWorkshops(state) {
+      console.log("getWorkshops -> state", state);
       axios.post('/get-workshop').then(function (res) {
         state.rows = res.data.workshops;
       })["catch"](function (err) {

@@ -45,6 +45,7 @@ export const store = new Vuex.Store({
             );
         },
         getWorkshops(state) {
+            console.log("getWorkshops -> state", state)
             axios.post('/get-workshop')
                 .then(res => {
                     state.rows = res.data.workshops;
